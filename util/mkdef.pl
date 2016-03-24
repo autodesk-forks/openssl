@@ -1324,8 +1324,6 @@ EOO
 ; Definition file for the DLL version of the $name library from OpenSSL
 ;
 
-LIBRARY         $libname	$liboptions
-
 EOF
 
 	if ($W16) {
