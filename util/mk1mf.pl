@@ -13,6 +13,8 @@ $INSTALLTOP="/usr/local/ssl";
 $OPENSSLDIR="/usr/local/ssl";
 $OPTIONS="";
 $ssl_version="";
+$ssl_major="";
+$ssl_infix="";
 $banner="\t\@echo Building OpenSSL";
 
 my $no_static_engine = 1;
@@ -28,6 +30,8 @@ my $ex_l_libs = "";
 
 my %mf_import = (
 	VERSION	       => \$ssl_version,
+	MAJOR	       => \$ssl_major,
+	INFIX	       => \$ssl_infix,
 	OPTIONS        => \$OPTIONS,
 	INSTALLTOP     => \$INSTALLTOP,
 	OPENSSLDIR     => \$OPENSSLDIR,
@@ -249,6 +253,9 @@ $tmp_dir=(defined($VARS{'TMP'}))?$VARS{'TMP'}:$tmp_def.($debug?".dbg":"");
 $inc_dir=(defined($VARS{'INC'}))?$VARS{'INC'}:$inc_def;
 
 $bin_dir=$bin_dir.$o unless ((substr($bin_dir,-1,1) eq $o) || ($bin_dir eq ''));
+
+$ssl_infix .= "d" if $debug;
+$ssl_infix .= $ssl_major if ($ssl_infix && $ssl_infix ne "" && $ssl_infix ne "d");
 
 $cflags= "$xcflags$cflags" if $xcflags ne "";
 
@@ -530,7 +537,7 @@ CRYPTO=$crypto
 # ENG_D  - dynamic engine output directory
 # Note: if you change these point to different directories then uncomment out
 # the lines around the 'NB' comment below.
-# 
+#
 BIN_D=\$(OUT_D)
 TEST_D=\$(OUT_D)
 LIB_D=\$(OUT_D)
@@ -541,12 +548,12 @@ ENG_D=\$(OUT_D)
 OBJ_D=\$(TMP_D)
 INCL_D=\$(TMP_D)
 
-O_SSL=     \$(LIB_D)$o$plib\$(SSL)$shlibp
-O_CRYPTO=  \$(LIB_D)$o$plib\$(CRYPTO)$shlibp
-SO_SSL=    $plib\$(SSL)$so_shlibp
-SO_CRYPTO= $plib\$(CRYPTO)$so_shlibp
-L_SSL=     \$(LIB_D)$o$plib\$(SSL)$libp
-L_CRYPTO=  \$(LIB_D)$o$plib\$(CRYPTO)$libp
+O_SSL=     \$(LIB_D)$o$plib\$(SSL)$ssl_infix$shlibp
+O_CRYPTO=  \$(LIB_D)$o$plib\$(CRYPTO)$ssl_infix$shlibp
+SO_SSL=    $plib\$(SSL)$ssl_infix$so_shlibp
+SO_CRYPTO= $plib\$(CRYPTO)$ssl_infix$so_shlibp
+L_SSL=     \$(LIB_D)$o$plib\$(SSL)$ssl_infix$libp
+L_CRYPTO=  \$(LIB_D)$o$plib\$(CRYPTO)$ssl_infix$libp
 
 L_LIBS= \$(L_SSL) \$(L_CRYPTO) $ex_l_libs
 
@@ -802,7 +809,7 @@ if ($fips)
 foreach (split(" ",$otherlibs))
 	{
 	my $uc = $_;
-	$uc =~ tr /a-z/A-Z/;	
+	$uc =~ tr /a-z/A-Z/;
 	$rules.= &do_lib_rule("\$(${uc}OBJ)","\$(ENG_D)$o$_$shlibp", "", $shlib, "");
 
 	}
@@ -938,7 +945,7 @@ sub do_defs
 	local(*OUT,$tmp,$t);
 
 	$files =~ s/\//$o/g if $o ne '/';
-	$ret="$var="; 
+	$ret="$var=";
 	$n=1;
 	$Vars{$var}.="";
 	foreach (split(/ /,$files))
@@ -1074,7 +1081,7 @@ sub cc_compile_target
 	{
 	local($target,$source,$ex_flags, $srcd)=@_;
 	local($ret);
-	
+
 	$ex_flags.=" -DMK1MF_BUILD -D$platform_cpp_symbol" if ($source =~ /cversion/);
 	$target =~ s/\//$o/g if $o ne "/";
 	$source =~ s/\//$o/g if $o ne "/";
@@ -1141,7 +1148,7 @@ sub do_copy_rule
 	{
 	local($to,$files,$p)=@_;
 	local($ret,$_,$n,$pp);
-	
+
 	$files =~ s/\//$o/g if $o ne '/';
 	foreach (split(/\s+/,$files))
 		{
@@ -1185,7 +1192,7 @@ sub read_options
 		"no-ripemd" => \$no_ripemd,
 		"no-mdc2" => \$no_mdc2,
 		"no-whirlpool" => \$no_whirlpool,
-		"no-patents" => 
+		"no-patents" =>
 			[\$no_rc2, \$no_rc4, \$no_rc5, \$no_idea, \$no_rsa],
 		"no-rsa" => \$no_rsa,
 		"no-dsa" => \$no_dsa,
@@ -1292,7 +1299,7 @@ sub read_options
 		($ALGO = $algo) =~ tr/[a-z]/[A-Z]/;
 
 		$xcflags="-DOPENSSL_EXPERIMENTAL_$ALGO $xcflags";
-		
+
 		}
 	elsif (/^--with-krb5-flavor=(.*)$/)
 		{

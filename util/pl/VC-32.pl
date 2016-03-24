@@ -43,7 +43,7 @@ if ($FLAVOR =~ /WIN64/)
     # own desing and limiting its return value to 2GB-1 (see e_os.h). As
     # per 0.9.8 release remaining warnings were explicitly examined and
     # considered safe to ignore.
-    # 
+    #
     $base_cflags= " $mf_cflag";
     my $f = $shlib || $fips ?' /MD':' /MT';
     $opt_cflags=$f.' /Ox';
@@ -139,11 +139,22 @@ else	# Win32
 $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
 $mlflags='';
 
+if ($FLAVOR =~ /WIN64/)
+    {
+$out_def ="out64";	$out_def.="dll"			if ($shlib);
+			$out_def.='_$(TARGETCPU)'	if ($FLAVOR =~ /CE/);
+$tmp_def ="tmp64";	$tmp_def.="dll"			if ($shlib);
+			$tmp_def.='_$(TARGETCPU)'	if ($FLAVOR =~ /CE/);
+$inc_def="inc64";
+    }
+else
+    {
 $out_def ="out32";	$out_def.="dll"			if ($shlib);
 			$out_def.='_$(TARGETCPU)'	if ($FLAVOR =~ /CE/);
 $tmp_def ="tmp32";	$tmp_def.="dll"			if ($shlib);
 			$tmp_def.='_$(TARGETCPU)'	if ($FLAVOR =~ /CE/);
 $inc_def="inc32";
+}
 
 if ($debug)
 	{
