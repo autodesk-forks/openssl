@@ -15,7 +15,7 @@ fi
 
 	chmod -RLH -f u+w .
 	make clean
-	./Configure  no-idea no-mdc2 no-rc5 no-ssl2 no-ssl3 darwin64-x86_64-cc --prefix=$1 --openssldir=$1 
+	./Configure  shared no-idea no-mdc2 no-rc5 no-ssl2 no-ssl3 darwin64-x86_64-cc --prefix=$1 --openssldir=$1 
 	sed -ie "s/^CFLAG= -/CFLAG=  -mmacosx-version-min=$2 -/" "Makefile"
 	make depend
 	make
