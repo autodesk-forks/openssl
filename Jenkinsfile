@@ -1,8 +1,11 @@
 node('GEC3P') {
 		stage 'Checkout'
 		
-		git([url: 'https://git.autodesk.com/autodesk-forks/openssl.git', branch: 'autodesk/a360-sync-1.0.2e'])
+		checkout scm
 		
                 stage 'Build'
-		echo 'Hello World'
+    
+		bat 'adsk_install.bat x86 vc14'
+		bat 'adsk_install.bat x64 vc14'
+                
 }
