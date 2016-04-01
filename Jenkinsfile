@@ -3,9 +3,11 @@ node('GEC3P') {
 		
 		checkout scm
 		
-                stage 'Build'
+                stage 'Build 32 bit'
     
-		bat '%WORKSPACE%\\adsk_install.bat x86 vc14'
-		bat '%WORKSPACE%\\adsk_install.bat x64 vc14'
+		bat 'adsk_install.bat x86 vc14'
+
+                stage 'Build 64 bit'
+		bat 'adsk_install.bat x64 vc14'
                 
 }
